@@ -1,4 +1,5 @@
 /* @flow */
+import { warn } from './index';
 
 /**
  * unicode letters used for parsing html tags, component names and property paths.
@@ -39,6 +40,17 @@ export function parsePath (path: string): any {
   return function (obj) {
     for (let i = 0; i < segments.length; i++) {
       if (!obj) return
+
+      if (
+        !obj.hasOwnProperty(segments[i]) &&
+        process.env.NODE_ENV !== 'production'
+      ) {
+        warn(
+          `Failed watching path: "${segments[i]}". ` +
+          `Property "${path}" does not exist.`
+        )
+      }
+
       obj = obj[segments[i]]
     }
     return obj
